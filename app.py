@@ -1,6 +1,7 @@
 import json
 import requests
 from datetime import datetime as dt
+from datetime import timedelta, timezone
 
 from dateutil.parser import isoparse
 
@@ -13,7 +14,7 @@ log = app.logger
 
 client = ApifyClient()
 
-phTZObject = dt.timezone(dt.timedelta(hours=8), name="Malay Peninsula Standard Time")
+phTZObject = timezone(timedelta(hours=8), name="Malay Peninsula Standard Time")
 
 @app.route('/', methods=['POST'])
 def webhook():
