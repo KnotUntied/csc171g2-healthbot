@@ -48,7 +48,7 @@ def confirmed_cases(req):
 
     if data_confirmed:
         response = (
-            f'According to the DOH, there have been {data_confirmed} confirmed cases '
+            f'According to the DOH, there have been {data_confirmed:,} confirmed cases '
             f'as of {data_updated_tz.strftime("%B %d, %Y")}.'
         )
     else:
