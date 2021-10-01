@@ -13,6 +13,7 @@ log = app.logger
 
 client = ApifyClient()
 
+phTZObject = dt.timezone(dt.timedelta(hours=8), name="Malay Peninsula Standard Time")
 
 @app.route('/', methods=['POST'])
 def webhook():
@@ -34,29 +35,25 @@ def webhook():
 
 
 def confirmed_cases(req):
-    # data = requests.get(
-    #     'https://api.apify.com/v2/key-value-stores/lFItbkoNDXKeSWBBA/records/LATEST?disableRedirect=true'
-    # )
+    data = requests.get(
+        'https://api.apify.com/v2/key-value-stores/lFItbkoNDXKeSWBBA/records/LATEST?disableRedirect=true'
+    )
 
-    # data_json = data.json()
-    # data_confirmed = data_json.get('infected')
-    # data_updated = data_json.get('lastUpdatedAtApify')
-    # data_updated_iso = isoparse(data_updated)
-    # data_updated_tz = data_updated_iso.astimezone
+    data_json = data.json()
+    data_confirmed = data_json.get('infected')
+    data_updated = data_json.get('lastUpdatedAtApify')
+    data_updated_iso = isoparse(data_updated)
+    data_updated_tz = data_updated_iso.astimezone(phTZObject)
 
-    # if data_confirmed:
-    #     response = f'According to the DOH, there have been {data_confirmed} confirmed cases as of {}'
-    # else:
-    #     response = 'We were unable to retrieve data from the DOH. Please try again.'
+    if data_confirmed:
+        response = (
+            f'According to the DOH, there have been {data_confirmed} confirmed cases '
+            f'as of {data_updated_tz.strftime('%B %d, %Y')}.'
+        )
+    else:
+        response = 'We were unable to retrieve data from the DOH. Please try again.'
 
-    # return response
-    return 'Hello World!'
-
-
-# def _call_apify_api():
-#     return requests.get(
-#         'http://api.worldweatheronline.com/premium/v1/weather.ashx'
-#     )
+    return response
 
 
 if __name__ == '__main__':
