@@ -26,6 +26,12 @@ def webhook():
 
     if action == 'coronavirus.confirmed_cases':
         res = confirmed_cases(req)
+    elif action == 'coronavirus.deaths':
+        res = deaths(req)
+    elif action == 'coronavirus.recovered':
+        res = recovered(req)
+    elif action == 'coronavirus.active_cases':
+        res = active_cases(req)
     else:
         log.error('Unexpected action.')
 
