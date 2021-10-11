@@ -2,12 +2,8 @@ from flask import Flask, request, make_response, jsonify
 
 from actions import ACTIONS
 
-# from apify_client import ApifyClient
-
 app = Flask(__name__)
 log = app.logger
-
-# client = ApifyClient()
 
 @app.route('/', methods=['POST'])
 def webhook():
