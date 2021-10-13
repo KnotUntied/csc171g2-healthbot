@@ -137,12 +137,12 @@ def _get_from_scraper(key, alias, location='NATIONAL'):
         data = requests.get(
             'https://raw.githubusercontent.com/KnotUntied/ph-covid19-cases-scraper/master/data/local.json')
 
-    value = int(data.json().get(key))
-    print(f'{key}: {value}')
+    value = data.json().get(key)
+    print(f'{key}: {value:,.0}')
 
-    if value:
+    if value is not None:
         if location in PH_LOCATION_ALIAS:
-            response = f'According to the DOH, the number of {alias} in {PH_LOCATION_ALIAS.get(location)} is {value:,}.'
+            response = f'According to the DOH, the number of {alias} in {PH_LOCATION_ALIAS.get(location)} is {value:,.0}.'
         else:
             response = 'We were unable to identify this location.'
     else:
