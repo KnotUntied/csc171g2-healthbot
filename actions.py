@@ -152,21 +152,34 @@ def _get_from_scraper(key, alias, location='NATIONAL'):
 
     return response
 
+def _get_param_location(req):
+    try:
+        params = req.get('queryResult').get('parameters')
+    except AttributeError:
+        return 'json error'
+
+    location = params.get('ph_locations') or 'NATIONAL'
+    return location
 
 def active_cases(req):
-    return _get_from_scraper('Active Cases', 'active cases of COVID-19')
+    location = _get_param_location(req)
+    return _get_from_scraper('Active Cases', 'active cases of COVID-19', location)
 
 def confirmed_cases(req):
-    return _get_from_scraper('Total Cases', 'confirmed cases of COVID-19')
+    location = _get_param_location(req)
+    return _get_from_scraper('Total Cases', 'confirmed cases of COVID-19', location)
 
 def deaths(req):
-    return _get_from_scraper('Deaths', 'deaths from COVID-19')
+    location = _get_param_location(req)
+    return _get_from_scraper('Deaths', 'deaths from COVID-19', location)
 
 def new_cases(req):
-    return _get_from_scraper('New Cases', 'new cases of COVID-19')
+    location = _get_param_location(req)
+    return _get_from_scraper('New Cases', 'new cases of COVID-19', location)
 
 def recovered(req):
-    return _get_from_scraper('Recoveries', 'recoveries from COVID-19')
+    location = _get_param_location(req)
+    return _get_from_scraper('Recoveries', 'recoveries from COVID-19', location)
 
 ACTIONS = {
     'coronavirus.active_cases': active_cases,
