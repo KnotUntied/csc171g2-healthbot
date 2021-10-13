@@ -169,9 +169,9 @@ def recovered(req):
     return _get_from_scraper('Recoveries', 'recoveries from COVID-19')
 
 ACTIONS = {
-    'coronavirus.active_cases': active_cases
+    'coronavirus.active_cases': active_cases,
     'coronavirus.confirmed_cases': confirmed_cases,
     'coronavirus.deaths': deaths,
     'coronavirus.new_cases': new_cases,
-    'coronavirus.recovered': recovered,
+    'coronavirus.recovered': recovered
 }
