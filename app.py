@@ -11,7 +11,7 @@ def webhook():
     try:
         action = req.get('queryResult').get('action')
     except AttributeError:
-        return 'json error'
+        return 400
 
     try:
         res = ACTIONS[action](req)
@@ -19,9 +19,11 @@ def webhook():
         log.error('Unexpected action.')
 
     print('Action: ' + action)
-    print('Response: ' + res)
+    print('Response:')
+    print(res)
 
-    return make_response(jsonify({'fulfillmentText': res}))
+    # return make_response(jsonify({'fulfillmentText': res}))
+    return make_response(jsonify(res))
 
 
 if __name__ == '__main__':

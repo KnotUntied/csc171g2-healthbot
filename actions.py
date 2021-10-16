@@ -143,14 +143,14 @@ def _get_from_scraper(key, alias, location='NATIONAL'):
 
     if value is not None:
         if location in PH_LOCATION_ALIAS:
-            response = f'According to the DOH, the number of {alias} in {PH_LOCATION_ALIAS.get(location)} is {value:,}.'
+            text = f'According to the DOH, the number of {alias} in {PH_LOCATION_ALIAS.get(location)} is {value:,}.'
         else:
-            response = 'We were unable to identify this location.'
+            text = 'We were unable to identify this location.'
     else:
-        response = ('We were unable to retrieve data from the DOH. '
+        text = ('We were unable to retrieve data from the DOH. '
                     'You may also check their COVID-19 dashboard at https://doh.gov.ph/covid19tracker.')
 
-    return response
+    return {'fulfillmentText': text}
 
 def _get_param_location(req):
     try:
@@ -181,10 +181,80 @@ def recovered(req):
     location = _get_param_location(req)
     return _get_from_scraper('Recoveries', 'recoveries from COVID-19', location)
 
+
+ASSESS_QUESTIONS = {
+    'Q1': 'Have you recently travelled to or resided in a country with local transmission of COVID-19?',
+    'Q2': 'Have you recently travelled to or resided in an area under enhanced community quarantine (ECQ)?',
+    'Q3': ('Were you exposed to a confirmed COVID-19 case through any of the following situations?\n'
+            'A. Staying in a closed environment (such as classroom, household, workspace, or gathering)\n'
+            'B. Travelling in close proximity to a confirmed case\n'
+            'C. Giving direct care to a COVID-19 patient without proper personal protective equipment'),
+    'Q4': ('Which of the following symptoms do you have right now?\n'
+            'You may also answer "all" or "none."\n'
+            '1. Fever - temperatures higher than 38°C for more than 48 hours\n'
+            '2. Cough - with/without phlegm\n'
+            '3. Shortness of breath\n'
+            '4. Diarrhea and/or vomiting\n'
+            '5. Sore throat\n'
+            '6. Nasal congestion - runny and/or stuffy nose\n'
+            '7. Muscle pain and/or fatigue'),
+    'Q5': 'Did any of your symptoms appear from the past 14 days?',
+    'Q6': 'How old are you in years?',
+    'Q7': ('Do you have any of the following medical conditions?\n'
+            '1. Diabetes\n'
+            '2. Hypertension\n'
+            '3. Cancer, with ongoing chemotherapy or radiation therapy\n'
+            '4. Heart disease (such as congestive heart failure or coronary artery disease)\n'
+            '5. Lupus, scleroderma, dermatomyositis or another connective tissue disease\n'
+            '6. Condition or medication (such as steroids) that suppresses the immune system\n'
+            '7. Chronic lung disease (such as asthma, chronic obstructive pulmonary disease or tuberculosis)')
+}
+ASSESS_POINTS = {
+    'fever':               0.6,
+    'cough':               0.55,
+    'shortness of breath': 0.6,
+    'diarrhea':            0.6,
+    'sore throat':         0.55,
+    'nasal congestion':    0.55,
+    'muscle pain':         0.6
+}
+ASSESS_MULTIPLIERS = {
+    'Q1': 1.15,
+    'Q2': 1.25,
+    'Q3': 1.5,
+    'Q5': 1.5,
+    'Q6': 1.35,
+    'Q7': 1.3
+}
+ASSESS_RESPONSES = {
+    'SAFE': 'a',
+    'PUM': 'b',
+    'PUI_MILD': 'c',
+    'PUI_SEVERE': 'd'
+}
+
+def assess_yes(req):
+    return {'fulfillmentText': '${DIALOGFLOW_PROJECT_ID}',
+            'outputContexts': req['queryResult']['outputContexts']}
+
+def assess_no(req):
+    pass
+
+def assess_previous(req):
+    pass
+
+def assess_symptoms(req):
+    pass
+
 ACTIONS = {
     'coronavirus.active_cases': active_cases,
     'coronavirus.confirmed_cases': confirmed_cases,
     'coronavirus.deaths': deaths,
     'coronavirus.new_cases': new_cases,
-    'coronavirus.recovered': recovered
+    'coronavirus.recovered': recovered,
+
+    'coronavirus.assess_yes': assess_yes,
+    'coronavirus.assess_no': assess_no,
+    'coronavirus.assess_previous': assess_previous,
+    'coronavirus.assess_symptoms': assess_symptoms
 }
