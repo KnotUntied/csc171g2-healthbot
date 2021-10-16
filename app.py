@@ -1,9 +1,32 @@
+from os import getenv
+
 from flask import Flask, request, make_response, jsonify
 
 from actions import ACTIONS
 
 app = Flask(__name__)
 log = app.logger
+
+@app.route('/')
+@app.route('/index')
+def index():
+    agent_id = getenv('AGENT_ID')
+    return '''
+<html>
+    <head>
+        <title>Healthbot</title>
+    </head>
+    <body>
+        <script src="https://www.gstatic.com/dialogflow-console/fast/messenger/bootstrap.js?v=1"></script>
+        <df-messenger
+          expand=true
+          intent="WELCOME"
+          chat-title="Healthbot"
+          agent-id=''' + agent_id + '''
+          language-code="en"
+        ></df-messenger>
+    </body>
+</html>'''
 
 @app.route('/', methods=['POST'])
 def webhook():
