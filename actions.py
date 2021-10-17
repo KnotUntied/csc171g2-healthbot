@@ -238,6 +238,24 @@ def _get_request_values(req):
     params = req.get('queryResult').get('params')
     return (session, params)
 
+def _get_contexts_cleared():
+    contexts = req.get('queryResult').get('outputContexts')
+    for context in contexts:
+        context['lifespanCount'] = 0
+    return contexts
+
+def _add_context(contexts, context_name):
+    if any(c['name'] == context_name for c in contexts):
+        c['lifespanCount'] = 5
+        return c
+    else:
+        new_context = {
+            'name': session + '/contexts/' + context_name,
+            'lifespanCount': 5
+        }
+        contexts.append(new_context)
+        return new_context
+
 def assess_yes(req):
     # "outputContexts": [
     #   {
@@ -249,17 +267,13 @@ def assess_yes(req):
     #   }
     # ],
     (session, params) = _get_request_values(req)
-    coronavirus_assess = {
-        'name': session + '/contexts/coronavirus_assess',
-        'lifespanCount': 5,
-        'parameters': params
-    }
-    coronavirus_assess_yesno = {
-        'name': session + '/contexts/coronavirus_assess_yesno',
-        'lifespanCount': 5
-    }
+    contexts = _get_contexts_cleared()
+    coronavirus_assess = _add_context(contexts, 'coronavirus_assess')
+    # coronavirus_assess_yesno = _add_context(contexts, 'coronavirus_assess_yesno')
+
+    coronavirus_assess['parameters'] = params
     return {'fulfillmentText': 'foo',
-            'outputContexts': [coronavirus_assess]}
+            'outputContexts': contexts}
 
 def assess_no(req):
     pass
