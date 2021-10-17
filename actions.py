@@ -267,7 +267,7 @@ def assess_yes(req):
     #   }
     # ],
     (session, params) = _get_request_values(req)
-    contexts = _get_contexts_cleared()
+    contexts = _get_contexts_cleared(req)
     coronavirus_assess = _add_context(contexts, 'coronavirus_assess')
     # coronavirus_assess_yesno = _add_context(contexts, 'coronavirus_assess_yesno')
 
