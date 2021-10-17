@@ -246,9 +246,10 @@ def _get_contexts_cleared(req):
 
 def _add_context(session, contexts, context_name):
     new_context_name = session + '/contexts/' + context_name
-    if any(c['name'] == new_context_name for c in contexts):
-        c['lifespanCount'] = 5
-        return c
+    for c in contexts:
+        if c['name'] == new_context_name:
+            c['lifespanCount'] = 5
+            return c
     else:
         new_context = {
             'name': new_context_name,
