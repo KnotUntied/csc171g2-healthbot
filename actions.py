@@ -238,7 +238,7 @@ def _get_request_values(req):
     params = req.get('queryResult').get('params')
     return (session, params)
 
-def _get_contexts_cleared():
+def _get_contexts_cleared(req):
     contexts = req.get('queryResult').get('outputContexts')
     for context in contexts:
         context['lifespanCount'] = 0
