@@ -249,13 +249,17 @@ def assess_yes(req):
     #   }
     # ],
     (session, params) = _get_request_values(req)
-    sample_output_context = {
-        'name': session + '/contexts/bar',
+    coronavirus_assess = {
+        'name': session + '/contexts/coronavirus_assess',
         'lifespanCount': 5,
         'parameters': params
     }
+    coronavirus_assess_yesno = {
+        'name': session + '/contexts/coronavirus_assess_yesno',
+        'lifespanCount': 5
+    }
     return {'fulfillmentText': 'foo',
-            'outputContexts': [sample_output_context]}
+            'outputContexts': [coronavirus_assess]}
 
 def assess_no(req):
     pass
