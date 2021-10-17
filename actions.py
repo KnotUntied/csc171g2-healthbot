@@ -233,9 +233,29 @@ ASSESS_RESPONSES = {
     'PUI_SEVERE': 'd'
 }
 
+def _get_request_values(req):
+    session = req.get('session')
+    params = req.get('queryResult').get('params')
+    return (session, params)
+
 def assess_yes(req):
-    return {'fulfillmentText': '${DIALOGFLOW_PROJECT_ID}',
-            'outputContexts': req['queryResult']['outputContexts']}
+    # "outputContexts": [
+    #   {
+    #     "name": "projects/${PROJECT_ID}/agent/sessions/${SESSION_ID}/contexts/context name",
+    #     "lifespanCount": 5,
+    #     "parameters": {
+    #       "param": "param value"
+    #     }
+    #   }
+    # ],
+    (session, params) = _get_request_values(req)
+    sample_output_context = {
+        'name': session + '/contexts/bar',
+        'lifespanCount': 5,
+        'parameters': params
+    }
+    return {'fulfillmentText': 'foo',
+            'outputContexts': [sample_output_context]}
 
 def assess_no(req):
     pass
