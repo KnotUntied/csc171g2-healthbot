@@ -245,13 +245,13 @@ def _get_contexts_cleared(req):
     return contexts
 
 def _add_context(session, contexts, context_name):
-    if any(c['name'] == context_name for c in contexts):
-        print('Duplicate found.')
+    new_context_name = session + '/contexts/' + context_name
+    if any(c['name'] == new_context_name for c in contexts):
         c['lifespanCount'] = 5
         return c
     else:
         new_context = {
-            'name': session + '/contexts/' + context_name,
+            'name': new_context_name,
             'lifespanCount': 5
         }
         contexts.append(new_context)
