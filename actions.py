@@ -244,7 +244,7 @@ def _get_contexts_cleared(req):
         context['lifespanCount'] = 0
     return contexts
 
-def _add_context(contexts, context_name):
+def _add_context(session, contexts, context_name):
     if any(c['name'] == context_name for c in contexts):
         c['lifespanCount'] = 5
         return c
@@ -268,7 +268,7 @@ def assess_yes(req):
     # ],
     (session, params) = _get_request_values(req)
     contexts = _get_contexts_cleared(req)
-    coronavirus_assess = _add_context(contexts, 'coronavirus_assess')
+    coronavirus_assess = _add_context(session, contexts, 'coronavirus_assess')
     # coronavirus_assess_yesno = _add_context(contexts, 'coronavirus_assess_yesno')
 
     coronavirus_assess['parameters'] = params
