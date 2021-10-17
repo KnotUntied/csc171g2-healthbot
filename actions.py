@@ -246,6 +246,7 @@ def _get_contexts_cleared(req):
 
 def _add_context(session, contexts, context_name):
     if any(c['name'] == context_name for c in contexts):
+        print('Duplicate found.')
         c['lifespanCount'] = 5
         return c
     else:
@@ -270,6 +271,7 @@ def assess_yes(req):
     contexts = _get_contexts_cleared(req)
     coronavirus_assess = _add_context(session, contexts, 'coronavirus_assess')
     # coronavirus_assess_yesno = _add_context(contexts, 'coronavirus_assess_yesno')
+    # 
 
     coronavirus_assess['parameters'] = params
     return {'fulfillmentText': 'foo',
