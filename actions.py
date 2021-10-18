@@ -244,6 +244,15 @@ def _get_contexts_cleared(req):
         context['lifespanCount'] = 0
     return contexts
 
+def _get_current_coronavirus_assess_Q(session, contexts):
+    context_prefix = session + '/contexts/'
+    questions = list(ASSESS_QUESTIONS)
+    for c in contexts:
+        if c['name'] in questions:
+            return c
+    else:
+        return None
+
 def _add_context(session, contexts, context_name):
     new_context_name = session + '/contexts/' + context_name
     for c in contexts:
@@ -262,14 +271,17 @@ def assess_yes(req):
     (session, params) = _get_request_values(req)
     contexts = _get_contexts_cleared(req)
 
-    coronavirus_assess = _add_context(session, contexts, 'coronavirus_assess')
+    assess = _add_context(session, contexts, 'coronavirus_assess')
 
     # Assume user is at intro if no assess_Q
-    # TODO: Use context to determine progress
+    assess_Q = _get_current_coronavirus_assess_Q(session, contexts)
+    if assess_Q:
+        pass
+    else:
+        assess_Q = add_context(session, contexts, 'coronavirus_assess_Q1')
+        assess_yesno = _add_context(session, contexts, 'coronavirus_assess_yesno')
 
-    # coronavirus_assess_yesno = _add_context(session, contexts, 'coronavirus_assess_yesno')
-
-    coronavirus_assess['parameters'] = params
+    assess['parameters'] = params
     return {'fulfillmentText': 'foo',
             'outputContexts': contexts}
 
