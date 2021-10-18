@@ -183,13 +183,13 @@ def recovered(req):
 
 
 ASSESS_QUESTIONS = {
-    'Q1': 'Have you recently travelled to or resided in a country with local transmission of COVID-19?',
-    'Q2': 'Have you recently travelled to or resided in an area under enhanced community quarantine (ECQ)?',
-    'Q3': ('Were you exposed to a confirmed COVID-19 case through any of the following situations?\n'
+    'coronavirus_assess_Q1': 'Have you recently travelled to or resided in a country with local transmission of COVID-19?',
+    'coronavirus_assess_Q2': 'Have you recently travelled to or resided in an area under enhanced community quarantine (ECQ)?',
+    'coronavirus_assess_Q3': ('Were you exposed to a confirmed COVID-19 case through any of the following situations?\n'
             'A. Staying in a closed environment (such as classroom, household, workspace, or gathering)\n'
             'B. Travelling in close proximity to a confirmed case\n'
             'C. Giving direct care to a COVID-19 patient without proper personal protective equipment'),
-    'Q4': ('Which of the following symptoms do you have right now?\n'
+    'coronavirus_assess_Q4': ('Which of the following symptoms do you have right now?\n'
             'You may also answer "all" or "none."\n'
             '1. Fever - temperatures higher than 38°C for more than 48 hours\n'
             '2. Cough - with/without phlegm\n'
@@ -198,9 +198,9 @@ ASSESS_QUESTIONS = {
             '5. Sore throat\n'
             '6. Nasal congestion - runny and/or stuffy nose\n'
             '7. Muscle pain and/or fatigue'),
-    'Q5': 'Did any of your symptoms appear from the past 14 days?',
-    'Q6': 'How old are you in years?',
-    'Q7': ('Do you have any of the following medical conditions?\n'
+    'coronavirus_assess_Q5': 'Did any of your symptoms appear from the past 14 days?',
+    'coronavirus_assess_Q6': 'How old are you in years?',
+    'coronavirus_assess_Q7': ('Do you have any of the following medical conditions?\n'
             '1. Diabetes\n'
             '2. Hypertension\n'
             '3. Cancer, with ongoing chemotherapy or radiation therapy\n'
@@ -219,12 +219,12 @@ ASSESS_POINTS = {
     'muscle pain':         0.6
 }
 ASSESS_MULTIPLIERS = {
-    'Q1': 1.15,
-    'Q2': 1.25,
-    'Q3': 1.5,
-    'Q5': 1.5,
-    'Q6': 1.35,
-    'Q7': 1.3
+    'coronavirus_assess_Q1': 1.15,
+    'coronavirus_assess_Q2': 1.25,
+    'coronavirus_assess_Q3': 1.5,
+    'coronavirus_assess_Q5': 1.5,
+    'coronavirus_assess_Q6': 1.35,
+    'coronavirus_assess_Q7': 1.3
 }
 ASSESS_RESPONSES = {
     'SAFE': 'a',
@@ -259,20 +259,15 @@ def _add_context(session, contexts, context_name):
         return new_context
 
 def assess_yes(req):
-    # "outputContexts": [
-    #   {
-    #     "name": "projects/${PROJECT_ID}/agent/sessions/${SESSION_ID}/contexts/context name",
-    #     "lifespanCount": 5,
-    #     "parameters": {
-    #       "param": "param value"
-    #     }
-    #   }
-    # ],
     (session, params) = _get_request_values(req)
     contexts = _get_contexts_cleared(req)
+
     coronavirus_assess = _add_context(session, contexts, 'coronavirus_assess')
-    # coronavirus_assess_yesno = _add_context(contexts, 'coronavirus_assess_yesno')
-    # 
+
+    # Assume user is at intro if no assess_Q
+    # TODO: Use context to determine progress
+
+    # coronavirus_assess_yesno = _add_context(session, contexts, 'coronavirus_assess_yesno')
 
     coronavirus_assess['parameters'] = params
     return {'fulfillmentText': 'foo',
@@ -287,6 +282,11 @@ def assess_previous(req):
 def assess_symptoms(req):
     pass
 
+def assess_cancel(req):
+    contexts = _get_contexts_cleared(req)
+    return {'fulfillmentText': 'The self-assessment has been cancelled.',
+            'outputContexts': contexts}
+
 ACTIONS = {
     'coronavirus.active_cases': active_cases,
     'coronavirus.confirmed_cases': confirmed_cases,
@@ -297,5 +297,6 @@ ACTIONS = {
     'coronavirus.assess_yes': assess_yes,
     'coronavirus.assess_no': assess_no,
     'coronavirus.assess_previous': assess_previous,
-    'coronavirus.assess_symptoms': assess_symptoms
+    'coronavirus.assess_symptoms': assess_symptoms,
+    'coronavirus.assess_cancel': assess_cancel
 }
