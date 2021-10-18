@@ -197,9 +197,9 @@ ASSESS_QUESTIONS = {
             '5. Sore throat\n'
             '6. Nasal congestion - runny and/or stuffy nose\n'
             '7. Muscle pain and/or fatigue'),
-    'coronavirus_assess_q5': 'Q5: Did any of your symptoms appear from the past 14 days?',
-    'coronavirus_assess_q6': 'Q6: How old are you in years?',
-    'coronavirus_assess_q7': ('Q7: Do you have any of the following medical conditions?\n'
+    'coronavirus_assess_q5': 'Q4b: Did any of your symptoms appear from the past 14 days?',
+    'coronavirus_assess_q6': 'Q5: How old are you in years?',
+    'coronavirus_assess_q7': ('Q6: Do you have any of the following medical conditions?\n'
             '1. Diabetes\n'
             '2. Hypertension\n'
             '3. Cancer, with ongoing chemotherapy or radiation therapy\n'
@@ -234,7 +234,7 @@ ASSESS_RESPONSES = {
 
 def _get_request_values(req):
     session = req.get('session')
-    params = req.get('queryResult').get('params')
+    params = req.get('queryResult').get('parameters')
     return (session, params)
 
 def _get_contexts_cleared(req):
@@ -330,12 +330,14 @@ def assess_symptoms(req):
     contexts = _get_contexts_cleared(req)
 
     if params.get('all'):
-        # If no more next questions
         assess_Q = _add_context(session, contexts, 'coronavirus_assess_q5')
         text = ASSESS_QUESTIONS['coronavirus_assess_q5']
 
         assess_yesno = _add_context(session, contexts, 'coronavirus_assess_yesno')
     elif params.get('coronavirus_symptom'):
+        assess_Q = _add_context(session, contexts, 'coronavirus_assess_q5')
+        text = ASSESS_QUESTIONS['coronavirus_assess_q5']
+
         assess_yesno = _add_context(session, contexts, 'coronavirus_assess_yesno')
     else:
         assess_Q = _add_context(session, contexts, 'coronavirus_assess_q6')
@@ -351,11 +353,6 @@ def assess_symptoms(req):
 # def assess_age(req):
 #     pass
 
-# def assess_cancel(req):
-#     contexts = _get_contexts_cleared(req)
-#     return {'fulfillmentText': 'The self-assessment has been cancelled.',
-#             'outputContexts': contexts}
-
 ACTIONS = {
     'coronavirus.active_cases': active_cases,
     'coronavirus.confirmed_cases': confirmed_cases,
@@ -367,6 +364,5 @@ ACTIONS = {
     'coronavirus.assess_no': assess_no,
     'coronavirus.assess_previous': assess_previous,
     'coronavirus.assess_symptoms': assess_symptoms,
-    # 'coronavirus.assess_age': assess_age,
-    # 'coronavirus.assess_cancel': assess_cancel
+    # 'coronavirus.assess_age': assess_age
 }
