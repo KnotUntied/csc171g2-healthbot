@@ -139,8 +139,6 @@ def _get_from_scraper(key, alias, location='NATIONAL'):
             'https://raw.githubusercontent.com/KnotUntied/ph-covid19-cases-scraper/master/data/local.json')
         value = data.json().get(location).get(key)
 
-    print(f'{key}: {value:,}')
-
     if value is not None:
         if location in PH_LOCATION_ALIAS:
             text = f'According to the DOH, the number of {alias} in {PH_LOCATION_ALIAS.get(location)} is {value:,}.'
@@ -249,7 +247,6 @@ def _get_current_coronavirus_assess_q(session, contexts):
     context_prefix = session + '/contexts/'
     questions = list(ASSESS_QUESTIONS)
     for c in contexts:
-        print(c['name'].removeprefix(context_prefix))
         if c['name'].removeprefix(context_prefix) in questions:
             return c['name'].removeprefix(context_prefix)
     else:
@@ -329,12 +326,35 @@ def assess_previous(req):
     pass
 
 def assess_symptoms(req):
-    pass
-
-def assess_cancel(req):
+    (session, params) = _get_request_values(req)
     contexts = _get_contexts_cleared(req)
-    return {'fulfillmentText': 'The self-assessment has been cancelled.',
+
+    if params.get('all'):
+        # If no more next questions
+        assess_Q = _add_context(session, contexts, 'coronavirus_assess_q5')
+        text = ASSESS_QUESTIONS['coronavirus_assess_q5']
+
+        assess_yesno = _add_context(session, contexts, 'coronavirus_assess_yesno')
+    elif params.get('coronavirus_symptom'):
+        assess_yesno = _add_context(session, contexts, 'coronavirus_assess_yesno')
+    else:
+        assess_Q = _add_context(session, contexts, 'coronavirus_assess_q6')
+        text = ASSESS_QUESTIONS['coronavirus_assess_q6']
+
+
+    assess = _add_context(session, contexts, 'coronavirus_assess')
+    assess['parameters'] = params
+
+    return {'fulfillmentText': text,
             'outputContexts': contexts}
+
+# def assess_age(req):
+#     pass
+
+# def assess_cancel(req):
+#     contexts = _get_contexts_cleared(req)
+#     return {'fulfillmentText': 'The self-assessment has been cancelled.',
+#             'outputContexts': contexts}
 
 ACTIONS = {
     'coronavirus.active_cases': active_cases,
@@ -347,5 +367,6 @@ ACTIONS = {
     'coronavirus.assess_no': assess_no,
     'coronavirus.assess_previous': assess_previous,
     'coronavirus.assess_symptoms': assess_symptoms,
-    'coronavirus.assess_cancel': assess_cancel
+    # 'coronavirus.assess_age': assess_age,
+    # 'coronavirus.assess_cancel': assess_cancel
 }
