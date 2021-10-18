@@ -182,14 +182,15 @@ def recovered(req):
     return _get_from_scraper('Recoveries', 'recoveries from COVID-19', location)
 
 
+# Request contexts are lowercased
 ASSESS_QUESTIONS = {
-    'coronavirus_assess_Q1': 'Q1: Have you recently travelled to or resided in a country with local transmission of COVID-19?',
-    'coronavirus_assess_Q2': 'Q2: Have you recently travelled to or resided in an area under enhanced community quarantine (ECQ)?',
-    'coronavirus_assess_Q3': ('Q3: Were you exposed to a confirmed COVID-19 case through any of the following situations?\n'
+    'coronavirus_assess_q1': 'Q1: Have you recently travelled to or resided in a country with local transmission of COVID-19?',
+    'coronavirus_assess_q2': 'Q2: Have you recently travelled to or resided in an area under enhanced community quarantine (ECQ)?',
+    'coronavirus_assess_q3': ('Q3: Were you exposed to a confirmed COVID-19 case through any of the following situations?\n'
             'A. Staying in a closed environment (such as classroom, household, workspace, or gathering)\n'
             'B. Travelling in close proximity to a confirmed case\n'
             'C. Giving direct care to a COVID-19 patient without proper personal protective equipment'),
-    'coronavirus_assess_Q4': ('Q4: Which of the following symptoms do you have right now?\n'
+    'coronavirus_assess_q4': ('Q4: Which of the following symptoms do you have right now?\n'
             'You may also answer "all" or "none."\n'
             '1. Fever - temperatures higher than 38°C for more than 48 hours\n'
             '2. Cough - with/without phlegm\n'
@@ -198,9 +199,9 @@ ASSESS_QUESTIONS = {
             '5. Sore throat\n'
             '6. Nasal congestion - runny and/or stuffy nose\n'
             '7. Muscle pain and/or fatigue'),
-    'coronavirus_assess_Q5': 'Q5: Did any of your symptoms appear from the past 14 days?',
-    'coronavirus_assess_Q6': 'Q6: How old are you in years?',
-    'coronavirus_assess_Q7': ('Q7: Do you have any of the following medical conditions?\n'
+    'coronavirus_assess_q5': 'Q5: Did any of your symptoms appear from the past 14 days?',
+    'coronavirus_assess_q6': 'Q6: How old are you in years?',
+    'coronavirus_assess_q7': ('Q7: Do you have any of the following medical conditions?\n'
             '1. Diabetes\n'
             '2. Hypertension\n'
             '3. Cancer, with ongoing chemotherapy or radiation therapy\n'
@@ -219,12 +220,12 @@ ASSESS_POINTS = {
     'muscle pain':         0.6
 }
 ASSESS_MULTIPLIERS = {
-    'coronavirus_assess_Q1': 1.15,
-    'coronavirus_assess_Q2': 1.25,
-    'coronavirus_assess_Q3': 1.5,
-    'coronavirus_assess_Q5': 1.5,
-    'coronavirus_assess_Q6': 1.35,
-    'coronavirus_assess_Q7': 1.3
+    'coronavirus_assess_q1': 1.15,
+    'coronavirus_assess_q2': 1.25,
+    'coronavirus_assess_q3': 1.5,
+    'coronavirus_assess_q5': 1.5,
+    'coronavirus_assess_q6': 1.35,
+    'coronavirus_assess_q7': 1.3
 }
 ASSESS_RESPONSES = {
     'SAFE': 'a',
@@ -244,7 +245,7 @@ def _get_contexts_cleared(req):
         context['lifespanCount'] = 0
     return contexts
 
-def _get_current_coronavirus_assess_Q(session, contexts):
+def _get_current_coronavirus_assess_q(session, contexts):
     context_prefix = session + '/contexts/'
     questions = list(ASSESS_QUESTIONS)
     for c in contexts:
@@ -272,20 +273,20 @@ def assess_yes(req):
     (session, params) = _get_request_values(req)
     contexts = _get_contexts_cleared(req)
 
-    assess_Q_name = _get_current_coronavirus_assess_Q(session, contexts)
+    assess_Q_name = _get_current_coronavirus_assess_q(session, contexts)
     if assess_Q_name:
         # If no more next questions
-        if assess_Q_name == 'coronavirus_assess_Q7':
+        if assess_Q_name == 'coronavirus_assess_q7':
             text = 'Test complete.'
         else:
             # If next question is Q4 - symptoms
-            if assess_Q_name == 'coronavirus_assess_Q3':
-                assess_Q = _add_context(session, contexts, 'coronavirus_assess_Q4')
-                text = ASSESS_QUESTIONS['coronavirus_assess_Q4']
+            if assess_Q_name == 'coronavirus_assess_q3':
+                assess_Q = _add_context(session, contexts, 'coronavirus_assess_q4')
+                text = ASSESS_QUESTIONS['coronavirus_assess_q4']
             # If next question is Q6 - age
-            elif assess_Q_name == 'coronavirus_assess_Q5':
-                assess_Q = _add_context(session, contexts, 'coronavirus_assess_Q6')
-                text = ASSESS_QUESTIONS['coronavirus_assess_Q6']
+            elif assess_Q_name == 'coronavirus_assess_q5':
+                assess_Q = _add_context(session, contexts, 'coronavirus_assess_q6')
+                text = ASSESS_QUESTIONS['coronavirus_assess_q6']
             else:
                 _assess_keys = ASSESS_QUESTIONS.keys()
                 _next_Q = _assess_keys[_assess_keys.index(assess_Q_name) + 1]
@@ -297,8 +298,8 @@ def assess_yes(req):
             assess = _add_context(session, contexts, 'coronavirus_assess')
             assess['parameters'] = params
     else:
-        assess_Q = _add_context(session, contexts, 'coronavirus_assess_Q1')
-        text = ASSESS_QUESTIONS['coronavirus_assess_Q1']
+        assess_Q = _add_context(session, contexts, 'coronavirus_assess_q1')
+        text = ASSESS_QUESTIONS['coronavirus_assess_q1']
 
         assess_yesno = _add_context(session, contexts, 'coronavirus_assess_yesno')
 
@@ -314,7 +315,7 @@ def assess_no(req):
 
     assess = _add_context(session, contexts, 'coronavirus_assess')
 
-    assess_Q = _get_current_coronavirus_assess_Q(session, contexts)
+    assess_Q = _get_current_coronavirus_assess_q(session, contexts)
     if assess_Q:
         pass
     else:
