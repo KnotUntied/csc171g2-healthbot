@@ -278,7 +278,7 @@ def assess_yes(req):
     if assess_Q:
         pass
     else:
-        assess_Q = add_context(session, contexts, 'coronavirus_assess_Q1')
+        assess_Q = _add_context(session, contexts, 'coronavirus_assess_Q1')
         assess_yesno = _add_context(session, contexts, 'coronavirus_assess_yesno')
 
     assess['parameters'] = params
