@@ -288,7 +288,7 @@ def assess_yes(req):
                 assess_Q = _add_context(session, contexts, 'coronavirus_assess_q6')
                 text = ASSESS_QUESTIONS['coronavirus_assess_q6']
             else:
-                _assess_keys = ASSESS_QUESTIONS.keys()
+                _assess_keys = list(ASSESS_QUESTIONS.keys())
                 _next_Q = _assess_keys[_assess_keys.index(assess_Q_name) + 1]
                 assess_Q = _add_context(session, contexts, _next_Q)
                 text = ASSESS_QUESTIONS[_next_Q]
