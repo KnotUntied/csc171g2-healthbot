@@ -248,6 +248,7 @@ def _get_current_coronavirus_assess_Q(session, contexts):
     context_prefix = session + '/contexts/'
     questions = list(ASSESS_QUESTIONS)
     for c in contexts:
+        print(c['name'].removeprefix(context_prefix))
         if c['name'].removeprefix(context_prefix) in questions:
             return c['name'].removeprefix(context_prefix)
     else:
@@ -288,7 +289,6 @@ def assess_yes(req):
             else:
                 _assess_keys = ASSESS_QUESTIONS.keys()
                 _next_Q = _assess_keys[_assess_keys.index(assess_Q_name) + 1]
-                print(_next_Q)
                 assess_Q = _add_context(session, contexts, _next_Q)
                 text = ASSESS_QUESTIONS[_next_Q]
 
