@@ -284,7 +284,7 @@ def _assess_evaluate(params):
     for multiplier in list(ASSESS_MULTIPLIERS.keys()):
         if params.get(multiplier) == 'yes':
             points *= ASSESS_MULTIPLIERS[multiplier]
-    if params.get('coronavirus_assess_q6') >= 60:
+    if params.get('coronavirus_assess_q6') and params.get('coronavirus_assess_q6') >= 60:
         points *= ASSESS_MULTIPLIERS['coronavirus_assess_q6']
     return str(points)
 
