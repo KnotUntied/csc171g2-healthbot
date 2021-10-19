@@ -279,11 +279,15 @@ def _assess_evaluate(params):
     points = 0.1
     symptoms = params.get('coronavirus_symptom')
     if symptoms:
+        print(f'Symptoms found')
         for symptom in symptoms:
+            print(f'Symptom: {symptom}')
             points += ASSESS_POINTS[symptom]
     for multiplier in list(ASSESS_MULTIPLIERS.keys()):
+        print(f'Multiplier: {multiplier}')
         if params.get(multiplier) == 'yes':
             points *= ASSESS_MULTIPLIERS[multiplier]
+            print(f'{multiplier} applied, now {points}')
     if params.get('coronavirus_assess_q6') and params.get('coronavirus_assess_q6') >= 60:
         points *= ASSESS_MULTIPLIERS['coronavirus_assess_q6']
     return str(points)
