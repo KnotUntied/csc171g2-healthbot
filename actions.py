@@ -360,8 +360,20 @@ def assess_symptoms(req):
     return {'fulfillmentText': text,
             'outputContexts': contexts}
 
-# def assess_age(req):
-#     pass
+def assess_age(req):
+    (session, params) = _get_request_values(req)
+    contexts = _get_contexts_cleared(req)
+
+    assess_Q = _add_context(session, contexts, 'coronavirus_assess_q7')
+    text = ASSESS_QUESTIONS['coronavirus_assess_q7']
+
+    assess_yesno = _add_context(session, contexts, 'coronavirus_assess_yesno')
+
+    assess = _add_context(session, contexts, 'coronavirus_assess')
+    assess['parameters'] = assess['parameters'] | params
+
+    return {'fulfillmentText': text,
+            'outputContexts': contexts}
 
 ACTIONS = {
     'coronavirus.active_cases': active_cases,
@@ -374,5 +386,5 @@ ACTIONS = {
     'coronavirus.assess_no': assess_no,
     'coronavirus.assess_previous': assess_previous,
     'coronavirus.assess_symptoms': assess_symptoms,
-    # 'coronavirus.assess_age': assess_age
+    'coronavirus.assess_age': assess_age
 }
