@@ -330,6 +330,8 @@ def assess_symptoms(req):
     contexts = _get_contexts_cleared(req)
 
     if params.get('all'):
+        params['coronavirus_symptom'] = list(ASSESS_POINTS.keys())
+
         assess_Q = _add_context(session, contexts, 'coronavirus_assess_q5')
         text = ASSESS_QUESTIONS['coronavirus_assess_q5']
 
@@ -342,7 +344,6 @@ def assess_symptoms(req):
     else:
         assess_Q = _add_context(session, contexts, 'coronavirus_assess_q6')
         text = ASSESS_QUESTIONS['coronavirus_assess_q6']
-
 
     assess = _add_context(session, contexts, 'coronavirus_assess')
     assess['parameters'] = params
