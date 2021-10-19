@@ -302,7 +302,7 @@ def assess_yes(req):
         assess = _add_context(session, contexts, 'coronavirus_assess')
         assess['parameters'] = assess['parameters'] | params
         if assess_Q_name == 'coronavirus_assess_q7':
-            text = _assess_evaluate(params)
+            text = _assess_evaluate(assess['parameters'])
         else:
             _assess_keys = list(ASSESS_QUESTIONS.keys())
             _next_Q = _assess_keys[_assess_keys.index(assess_Q_name) + 1]
