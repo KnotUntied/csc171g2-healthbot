@@ -398,6 +398,8 @@ def assess_symptoms(req):
         assess_Q = _add_context(session, contexts, 'coronavirus_assess_q6')
         text = ASSESS_QUESTIONS['coronavirus_assess_q6']
 
+        assess_age = _add_context(session, contexts, 'coronavirus_assess_age')
+
     assess = _add_context(session, contexts, 'coronavirus_assess')
     assess['parameters'] = assess['parameters'] | params
 
