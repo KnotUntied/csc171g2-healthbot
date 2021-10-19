@@ -208,6 +208,15 @@ ASSESS_QUESTIONS = {
             '6. Condition or medication (such as steroids) that suppresses the immune system\n'
             '7. Chronic lung disease (such as asthma, chronic obstructive pulmonary disease or tuberculosis)')
 }
+ASSESS_TYPES = {
+    'coronavirus_assess_q1': 'coronavirus_assess_yesno',
+    'coronavirus_assess_q2': 'coronavirus_assess_yesno',
+    'coronavirus_assess_q3': 'coronavirus_assess_yesno',
+    'coronavirus_assess_q4': 'coronavirus_assess_symptoms',
+    'coronavirus_assess_q5': 'coronavirus_assess_yesno',
+    'coronavirus_assess_q6': 'coronavirus_assess_age',
+    'coronavirus_assess_q7': 'coronavirus_assess_yesno'
+}
 ASSESS_POINTS = {
     'fever':               0.6,
     'cough':               0.55,
@@ -272,36 +281,28 @@ def assess_yes(req):
 
     assess_Q_name = _get_current_coronavirus_assess_q(session, contexts)
     if assess_Q_name:
-        # If no more next questions
+        params[assess_Q_name] = 'yes'
         if assess_Q_name == 'coronavirus_assess_q7':
             text = 'Test complete.'
         else:
-            # If next question is Q4 - symptoms
-            if assess_Q_name == 'coronavirus_assess_q3':
-                assess_Q = _add_context(session, contexts, 'coronavirus_assess_q4')
-                text = ASSESS_QUESTIONS['coronavirus_assess_q4']
-            # If next question is Q6 - age
-            elif assess_Q_name == 'coronavirus_assess_q5':
-                assess_Q = _add_context(session, contexts, 'coronavirus_assess_q6')
-                text = ASSESS_QUESTIONS['coronavirus_assess_q6']
-            else:
-                _assess_keys = list(ASSESS_QUESTIONS.keys())
-                _next_Q = _assess_keys[_assess_keys.index(assess_Q_name) + 1]
-                assess_Q = _add_context(session, contexts, _next_Q)
-                text = ASSESS_QUESTIONS[_next_Q]
+            _assess_keys = list(ASSESS_QUESTIONS.keys())
+            _next_Q = _assess_keys[_assess_keys.index(assess_Q_name) + 1]
+            assess_Q = _add_context(session, contexts, _next_Q)
+            text = ASSESS_QUESTIONS[_next_Q]
 
-                assess_yesno = _add_context(session, contexts, 'coronavirus_assess_yesno')
+            assess_type = _add_context(session, contexts, ASSESS_TYPES[_next_Q])
 
             assess = _add_context(session, contexts, 'coronavirus_assess')
-            assess['parameters'] = params
+            assess['parameters'] = assess['parameters'] | params
     else:
         assess_Q = _add_context(session, contexts, 'coronavirus_assess_q1')
         text = ASSESS_QUESTIONS['coronavirus_assess_q1']
 
-        assess_yesno = _add_context(session, contexts, 'coronavirus_assess_yesno')
+        params['coronavirus_assess_q1'] = 'yes'
+        assess_type = _add_context(session, contexts, 'coronavirus_assess_yesno')
 
         assess = _add_context(session, contexts, 'coronavirus_assess')
-        assess['parameters'] = params
+        assess['parameters'] = assess['parameters'] | params
 
     return {'fulfillmentText': text,
             'outputContexts': contexts}
@@ -310,15 +311,24 @@ def assess_no(req):
     (session, params) = _get_request_values(req)
     contexts = _get_contexts_cleared(req)
 
-    assess = _add_context(session, contexts, 'coronavirus_assess')
+    assess_Q_name = _get_current_coronavirus_assess_q(session, contexts)
+    if assess_Q_name:
+        params[assess_Q_name] = 'no'
+        if assess_Q_name == 'coronavirus_assess_q7':
+            text = 'Test complete.'
+        else:
+            _assess_keys = list(ASSESS_QUESTIONS.keys())
+            _next_Q = _assess_keys[_assess_keys.index(assess_Q_name) + 1]
+            assess_Q = _add_context(session, contexts, _next_Q)
+            text = ASSESS_QUESTIONS[_next_Q]
 
-    assess_Q = _get_current_coronavirus_assess_q(session, contexts)
-    if assess_Q:
-        pass
+            assess_type = _add_context(session, contexts, ASSESS_TYPES[_next_Q])
+
+            assess = _add_context(session, contexts, 'coronavirus_assess')
+            assess['parameters'] = assess['parameters'] | params
     else:
-        return assess_cancel(req)
+        text = 'The self-assessment has been cancelled.'
 
-    assess['parameters'] = params
     return {'fulfillmentText': text,
             'outputContexts': contexts}
 
@@ -346,7 +356,7 @@ def assess_symptoms(req):
         text = ASSESS_QUESTIONS['coronavirus_assess_q6']
 
     assess = _add_context(session, contexts, 'coronavirus_assess')
-    assess['parameters'] = params
+    assess['parameters'] = assess['parameters'] | params
 
     return {'fulfillmentText': text,
             'outputContexts': contexts}
