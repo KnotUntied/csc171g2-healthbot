@@ -296,11 +296,14 @@ def assess_yes(req):
     (session, params) = _get_request_values(req)
     contexts = _get_contexts_cleared(req)
 
+    assess = _add_context(session, contexts, 'coronavirus_assess')
+    assess['parameters'] = assess['parameters'] | params
+
     assess_Q_name = _get_current_coronavirus_assess_q(session, contexts)
     if assess_Q_name:
         params[assess_Q_name] = 'yes'
         if assess_Q_name == 'coronavirus_assess_q7':
-            text = _assess_evaluate(params)
+            text = _assess_evaluate(assess['parameters'])
         else:
             _assess_keys = list(ASSESS_QUESTIONS.keys())
             _next_Q = _assess_keys[_assess_keys.index(assess_Q_name) + 1]
@@ -316,9 +319,6 @@ def assess_yes(req):
         text = ASSESS_QUESTIONS['coronavirus_assess_q1']
 
         assess_type = _add_context(session, contexts, 'coronavirus_assess_yesno')
-
-        assess = _add_context(session, contexts, 'coronavirus_assess')
-        assess['parameters'] = assess['parameters'] | params
 
     return {'fulfillmentText': text,
             'outputContexts': contexts}
