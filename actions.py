@@ -235,10 +235,10 @@ ASSESS_MULTIPLIERS = {
     'coronavirus_assess_q7': 1.3
 }
 ASSESS_RESPONSES = {
-    'SAFE': 'a',
-    'PUM': 'b',
-    'PUI_MILD': 'c',
-    'PUI_SEVERE': 'd'
+    'SAFE': 'You appear to be safe from COVID-19 for now.',
+    'PUM': 'You may be classified as a Person Under Monitoring (PUM).',
+    'PUI_MILD': 'You may be classified as a Person Under Investigation (PUI) with mild risks.',
+    'PUI_SEVERE': 'You may be classified as a Person Under Investigation (PUI) with severe risks.'
 }
 
 def _get_request_values(req):
@@ -290,7 +290,15 @@ def _assess_evaluate(params):
             print(f'{multiplier} applied, now {points}')
     if params.get('coronavirus_assess_q6') and params.get('coronavirus_assess_q6') >= 60:
         points *= ASSESS_MULTIPLIERS['coronavirus_assess_q6']
-    return str(points)
+
+    if points >= 18:
+        return ASSESS_RESPONSES['PUI_SEVERE']
+    elif points >= 14:
+        return ASSESS_RESPONSES['PUI_MILD']
+    elif points >= 9:
+        return ASSESS_RESPONSES['PUM']
+    else:
+        return ASSESS_RESPONSES['SAFE']
 
 def assess_yes(req):
     (session, params) = _get_request_values(req)
@@ -329,8 +337,10 @@ def assess_no(req):
     assess_Q_name = _get_current_coronavirus_assess_q(session, contexts)
     if assess_Q_name:
         params[assess_Q_name] = 'no'
+        assess = _add_context(session, contexts, 'coronavirus_assess')
+        assess['parameters'] = assess['parameters'] | params
         if assess_Q_name == 'coronavirus_assess_q7':
-            text = 'Test complete.'
+            text = _assess_evaluate(assess['parameters'])
         else:
             _assess_keys = list(ASSESS_QUESTIONS.keys())
             _next_Q = _assess_keys[_assess_keys.index(assess_Q_name) + 1]
@@ -338,9 +348,6 @@ def assess_no(req):
             text = ASSESS_QUESTIONS[_next_Q]
 
             assess_type = _add_context(session, contexts, ASSESS_TYPES[_next_Q])
-
-            assess = _add_context(session, contexts, 'coronavirus_assess')
-            assess['parameters'] = assess['parameters'] | params
     else:
         text = 'The self-assessment has been cancelled.'
 
