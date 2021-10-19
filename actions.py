@@ -311,6 +311,9 @@ def assess_yes(req):
 
             assess_type = _add_context(session, contexts, ASSESS_TYPES[_next_Q])
     else:
+        assess = _add_context(session, contexts, 'coronavirus_assess')
+        assess['parameters'] = assess['parameters'] | params
+
         assess_Q = _add_context(session, contexts, 'coronavirus_assess_q1')
         text = ASSESS_QUESTIONS['coronavirus_assess_q1']
 
