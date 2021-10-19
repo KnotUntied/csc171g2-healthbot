@@ -359,30 +359,21 @@ def assess_previous(req):
     contexts = _get_contexts_cleared(req)
 
     assess_Q_name = _get_current_coronavirus_assess_q(session, contexts)
-    if assess_Q_name:
+    if assess_Q_name != 'coronavirus_assess_q1':
         assess = _add_context(session, contexts, 'coronavirus_assess')
-        if assess_Q_name != 'coronavirus_assess_q1':
-            _assess_keys = list(ASSESS_QUESTIONS.keys())
-            if (assess_Q_name == 'coronavirus_assess_q6'
-                and not assess['parameters'].get('coronavirus_symptom')
-            ):
-                _prev_Q = _assess_keys[_assess_keys.index(assess_Q_name) - 2]
-            else:
-                _prev_Q = _assess_keys[_assess_keys.index(assess_Q_name) - 1]
-            assess_Q = _add_context(session, contexts, _prev_Q)
-            text = ASSESS_QUESTIONS[_prev_Q]
-
-            assess_type = _add_context(session, contexts, ASSESS_TYPES[_prev_Q])
+        _assess_keys = list(ASSESS_QUESTIONS.keys())
+        if (assess_Q_name == 'coronavirus_assess_q6'
+            and not assess['parameters'].get('coronavirus_symptom')
+        ):
+            _prev_Q = _assess_keys[_assess_keys.index(assess_Q_name) - 2]
         else:
-            assess_Q = _add_context(session, contexts, 'coronavirus_assess_q1')
-            text = ASSESS_QUESTIONS['coronavirus_assess_q1']
+            _prev_Q = _assess_keys[_assess_keys.index(assess_Q_name) - 1]
+        assess_Q = _add_context(session, contexts, _prev_Q)
+        text = ASSESS_QUESTIONS[_prev_Q]
 
-            assess_type = _add_context(session, contexts, 'coronavirus_assess_yesno')
+        assess_type = _add_context(session, contexts, ASSESS_TYPES[_prev_Q])
     else:
-        assess_Q = _add_context(session, contexts, 'coronavirus_assess_q1')
-        text = ASSESS_QUESTIONS['coronavirus_assess_q1']
-
-        assess_type = _add_context(session, contexts, 'coronavirus_assess_yesno')
+        text = 'The self-assessment has been cancelled.'
 
     return {'fulfillmentText': text,
             'outputContexts': contexts}
