@@ -275,6 +275,19 @@ def _add_context(session, contexts, context_name):
         contexts.append(new_context)
         return new_context
 
+def _assess_evaluate(params):
+    points = 0.1
+    symptoms = params.get('coronavirus_symptom')
+    if symptoms:
+        for symptom in symptoms:
+            points += ASSESS_POINTS[symptom]
+    for multiplier in list(ASSESS_MULTIPLIERS.keys()):
+        if params.get(multiplier) == 'yes':
+            points *= ASSESS_MULTIPLIERS[multiplier]
+    if params.get('coronavirus_assess_q6') >= 60:
+        points *= ASSESS_MULTIPLIERS['coronavirus_assess_q6']
+    return str(points)
+
 def assess_yes(req):
     (session, params) = _get_request_values(req)
     contexts = _get_contexts_cleared(req)
@@ -283,7 +296,7 @@ def assess_yes(req):
     if assess_Q_name:
         params[assess_Q_name] = 'yes'
         if assess_Q_name == 'coronavirus_assess_q7':
-            text = 'Test complete.'
+            text = _assess_evaluate(params)
         else:
             _assess_keys = list(ASSESS_QUESTIONS.keys())
             _next_Q = _assess_keys[_assess_keys.index(assess_Q_name) + 1]
