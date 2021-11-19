@@ -41,11 +41,11 @@ def get_hotline(location):
             text = f"{location.capitalize()}: {COVID_HOTLINES[location]}"
         else:
             text = "{}:".format(location.capitalize())
-            for i in hotlines:
-                text += "\n-{}".format(i)
+            for hotline in hotlines:
+                text += "\n-{}".format(hotline)
         return text
     else:
         text = "Hotline not found in this location!"
         return text
 
-print(get_hotline("DAVAO CITY"))
+
