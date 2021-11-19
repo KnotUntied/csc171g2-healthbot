@@ -33,7 +33,13 @@ COVID_HOTLINES = {
     "VALENZUELA" : "(02) 8352-5000",
 }
 
-def get_hotline(location):
+def hotline(req):
+    try:
+        params = req.get('queryResult').get('parameters')
+    except AttributeError:
+        return 'json error'
+
+    location = params.get('ph_hotline')
     if location in COVID_HOTLINES:
         hotlines = COVID_HOTLINES[location].split(",")
         if len(hotlines) == 1:

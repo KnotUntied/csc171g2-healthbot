@@ -15,5 +15,5 @@ ACTIONS = {
     'coronavirus.assess_symptoms': assessment.assess_symptoms,
     'coronavirus.assess_age': assessment.assess_age,
 
-    'coronavirus.hotline': hotline.get_hotline
+    'coronavirus.hotline': hotline.hotline
 }
