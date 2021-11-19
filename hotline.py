@@ -48,9 +48,6 @@ def hotline(req):
             text = "{}:".format(location.capitalize())
             for hotline in hotlines:
                 text += "\n-{}".format(hotline)
-        return text
     else:
         text = "Hotline not found in this location!"
-        return text
-
-
+    return {'fulfillmentText': text}
